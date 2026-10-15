@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Hostel Mess Management System | DBMS Full-Stack Portal</title>
+  <meta name="description" content="Production-grade Enterprise Hostel Mess Management System with Oracle PL/SQL, SQL*Plus, JDBC, and ODBC integration. Built by Nishank Chhipa (25BCE1642).">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       APP ROOT CONTAINER
+       ========================================================================= -->
+  <div id="app-root">
+
+    <!-- -----------------------------------------------------------------------
+         SIDEBAR NAVIGATION
+         ----------------------------------------------------------------------- -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-glyph">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+            <path d="M3 9h18M9 21V9"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>MESS OPS</h1>
+          <p>ORACLE 3NF PORTAL</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a class="nav-item active admin-only-nav" data-view="turnstile" id="nav-turnstile">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="3"></circle><path d="M12 8v3"></path></svg>
+          </span>
+          <span>Turnstile POS</span>
+        </a>
+        <a class="nav-item admin-only-nav" data-view="boarders" id="nav-boarders">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </span>
+          <span>Boarder Registry</span>
+        </a>
+        <a class="nav-item admin-only-nav" data-view="rebates" id="nav-rebates">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </span>
+          <span>Rebate Desk</span>
+        </a>
+
+        <div class="nav-section-title admin-only-nav">Ledger & Financials</div>
+        <a class="nav-item admin-only-nav" data-view="billing" id="nav-billing">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </span>
+          <span>Billing Engine (Cursor)</span>
+        </a>
+        <a class="nav-item admin-only-nav" data-view="audit" id="nav-audit">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </span>
+          <span>Audit & Swipes Stream</span>
+        </a>
+
+        <!-- Student view (visible when authenticated as student) -->
+        <a class="nav-item" data-view="student-portal" id="nav-student-portal" style="display:none;">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </span>
+          <span>Student Mess Portal</span>
+        </a>
+      </nav>
+
+      <!-- DEVELOPER CREDITS & BRANDING (SIDEBAR BOTTOM-LEFT) -->
+      <div class="sidebar-footer">
+        <div class="dev-badge-card">
+          <div class="dev-badge-title">
+            <span>DBMS Lead Architect</span>
+            <span class="dev-badge-status-dot"></span>
+          </div>
+          <div class="dev-name">NISHANK CHHIPA</div>
+          <div class="dev-regno">REG NO: 25BCE1642</div>
+          <div class="dev-stack">B.Tech CSE • DBMS Project<br>(Oracle PL/SQL • JDBC • ODBC)</div>
+          <button class="btn-pill" style="margin-top:6px;width:100%;justify-content:center;font-size:11px;" onclick="openAboutModal()">
+            View Architecture Info
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- -----------------------------------------------------------------------
+         MAIN VIEWPORT
+         ----------------------------------------------------------------------- -->
+    <main class="main-viewport">
+
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <div class="header-breadcrumbs">
+            <span class="crumb-root">Portal</span>
+            <span class="crumb-sep">/</span>
+            <span class="crumb-current" id="current-crumb-title">Turnstile POS Emulator</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Live Oracle / JDBC Engine Status Pill -->
+          <div class="db-status-pill">
+            <span class="db-live-indicator" id="db-indicator-dot"></span>
+            <span id="db-pill-text">ORACLE ENGINE</span>
+          </div>
+
+          <!-- User Menu & Logout -->
+          <div class="user-profile-menu" onclick="logout()" title="Click to logout / switch role">
+            <div class="user-avatar" id="user-avatar-initial">A</div>
+            <div class="user-info-text">
+              <span class="user-info-name" id="user-display-name">Chief Mess Warden</span>
+              <span class="user-info-role" id="user-role-label">MESS WARDEN (ADMIN)</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-fog)"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          </div>
+        </div>
+      </header>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 1: TURNSTILE POS EMULATOR (ACCESS CONTROL)
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-turnstile">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Turnstile POS Emulator</h2>
+            <p>Real-time access control gateway verifying Oracle PL/SQL triggers (duplicate swipes & rebate guards)</p>
+          </div>
+          <div>
+            <button class="btn-secondary" onclick="resetDemoSwipes()" title="Reset today's meal swipes for testing">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              Reset Swipes Log
+            </button>
+          </div>
+        </div>
+
+        <div class="pos-layout">
+          <!-- Left Column: Student Selection & Meta Panel -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Boarder Card Scanner</span>
+              <span class="card-subtitle">RFID Simulation</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pos-student-select">Select Student (RFID Tag Lookup)</label>
+              <select id="pos-student-select" class="form-select" onchange="updatePosStudentMeta()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- Simulation Date Picker -->
+            <div class="form-group">
+              <label class="form-label" for="pos-sim-date">Simulation Date (Past / Present / Future)</label>
+              <input type="date" id="pos-sim-date" class="form-control" onchange="updatePosStudentMeta()">
+            </div>
+
+            <!-- Student Meta Panel -->
+            <div class="student-meta-panel">
+              <div class="meta-row">
+                <span class="meta-key">Residential Block</span>
+                <span class="meta-val" id="meta-block-room">BLK-B • Room 412</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Mess Catering Plan</span>
+                <span class="meta-val" id="meta-mess-plan">NON_VEG</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Wallet Float Balance</span>
+                <span class="balance-val" id="meta-wallet-balance">₹3,450.00</span>
+              </div>
+              <div style="margin-top: 4px;">
+                <span class="badge" id="meta-rebate-tag" style="display:none;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Meal Slot Availability Grid & Action Banners -->
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <span class="card-title">Live Meal Slot Availability</span>
+                  <div class="card-subtitle">Real-time status for selected simulation date</div>
+                </div>
+                <span class="badge badge-available">GATE 01 ACTIVE</span>
+              </div>
+
+              <!-- Slots Grid -->
+              <div class="slots-container" id="pos-slots-grid">
+                <!-- Breakfast, Lunch, Snacks, Dinner cards rendered here -->
+              </div>
+
+              <!-- High-Contrast Feedback & Constraint Violation Banner -->
+              <div id="pos-feedback-banner" class="pos-banner">
+                <span class="banner-icon">&#9679;</span>
+                <div id="pos-banner-text">Feedback details</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 2: BOARDER REGISTRY (STUDENT MANAGEMENT)
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-boarders" style="display:none;">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Boarder Registry</h2>
+            <p>Directory of registered hostel residents across Hall Blocks A, B, C, D</p>
+          </div>
+          <div>
+            <button class="btn-primary" onclick="openEnrollModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Enroll Boarder
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card" style="margin-bottom: 20px; padding: 14px 20px;">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="boarder-search-input" class="form-control" placeholder="Search by Student ID, Name, Room, or Block..." oninput="renderBoardersView()">
+            <select id="boarder-mess-filter" class="form-select" style="max-width: 200px;" onchange="renderBoardersView()">
+              <option value="ALL">All Mess Plans</option>
+              <option value="VEG">VEG</option>
+              <option value="NON_VEG">NON_VEG</option>
+              <option value="SPECIAL">SPECIAL</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Registration ID</th>
+                <th>Student Name</th>
+                <th>Block</th>
+                <th>Room</th>
+                <th>Mess Plan</th>
+                <th>Wallet Float</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="boarders-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 3: REBATE DESK (LEAVE GOVERNANCE)
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-rebates" style="display:none;">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Rebate Desk & Leave Approvals</h2>
+            <p>Mess leave governance module with date-aware policy guard execution</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 24px;">
+          <!-- Left: Apply Form -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">File Rebate Application</span>
+              <span class="card-subtitle">Warden / Student Form</span>
+            </div>
+
+            <form id="rebate-form" onsubmit="handleRebateSubmit(event)">
+              <div class="form-group">
+                <label class="form-label">Student Registration ID</label>
+                <input type="text" id="rebate-student-id" class="form-control" placeholder="e.g. 25BCE1642" required>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">From Date</label>
+                  <input type="date" id="rebate-from-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">To Date</label>
+                  <input type="date" id="rebate-to-date" class="form-control" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Absence Reason</label>
+                <input type="text" id="rebate-reason" class="form-control" placeholder="Academic OD, Hackathon, Medical Leave..." required>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width: 100%;">
+                Submit Rebate Application
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Rebate Policy Info Box -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Oracle Rebate Policy Rules</span>
+              <span class="badge badge-available">TRIGGER ENFORCED</span>
+            </div>
+            <div style="font-size: 13px; color: var(--color-fog); line-height: 1.6; display: flex; flex-direction: column; gap: 10px;">
+              <p>• <strong>Trigger <code>trg_rebate_swipe_guard</code>:</strong> Any turnstile swipe attempted while a student has an <code>APPROVED</code> rebate covering the calendar date is blocked immediately with Oracle Exception <code>-20002</code>.</p>
+              <p>• <strong>Daily Credit Allowance:</strong> Approved rebate days earn a fixed subsidy credit of <strong>₹180.00/day</strong>, deducted directly from gross tariff charges in the monthly ledger.</p>
+              <p>• <strong>Rebate Revocation:</strong> Wardens can revoke rebates on demand, instantly re-enabling turnstile access.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rebate ID</th>
+                <th>Boarder</th>
+                <th>Leave Interval</th>
+                <th>Reason</th>
+                <th>Policy Status</th>
+                <th>Warden Action</th>
+              </tr>
+            </thead>
+            <tbody id="rebates-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 4: BILLING ENGINE (EXPLICIT PL/SQL CURSOR PROCESS)
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-billing" style="display:none;">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Monthly Billing & Ledger Engine</h2>
+            <p>Executes Oracle PL/SQL package <code>mess_ops_pkg.calculate_monthly_billing</code> using explicit cursors</p>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 24px;">
+          <!-- Billing Calculation Form -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Cursor Calculation Setup</span>
+              <span class="card-subtitle">Explicit Cursor Simulation</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Target Student</label>
+              <select id="billing-student-select" class="form-select">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Billing Month</label>
+                <select id="billing-month" class="form-select">
+                  <option value="1">01 - January</option>
+                  <option value="2">02 - February</option>
+                  <option value="3">03 - March</option>
+                  <option value="4">04 - April</option>
+                  <option value="5">05 - May</option>
+                  <option value="6">06 - June</option>
+                  <option value="7">07 - July</option>
+                  <option value="8">08 - August</option>
+                  <option value="9">09 - September</option>
+                  <option value="10" selected>10 - October</option>
+                  <option value="11">11 - November</option>
+                  <option value="12">12 - December</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Billing Year</label>
+                <select id="billing-year" class="form-select">
+                  <option value="2026" selected>2026</option>
+                  <option value="2025">2025</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="runCursorBillingCalculation()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Run PL/SQL Billing Calculation
+            </button>
+          </div>
+
+          <!-- Billing Cursor Results Breakdown Card -->
+          <div class="card" id="billing-result-card" style="display: none;">
+            <div class="card-header">
+              <span class="card-title">PL/SQL Cursor Execution Breakdown</span>
+              <span class="badge badge-available">MERGE COMMITTED</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="meta-row">
+                <span class="meta-key">Cursor <code>c_swipes</code> Swipes Count:</span>
+                <span class="td-mono" id="bill-res-swipes">0</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Gross Meal Tariff Total:</span>
+                <span class="td-mono" id="bill-res-gross">₹0.00</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Cursor <code>c_rebates</code> Leave Days:</span>
+                <span class="td-mono" id="bill-res-reb-days">0 days</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Rebate Credit Subsidy (₹180/day):</span>
+                <span class="td-mono" style="color:var(--color-pulse-green)" id="bill-res-reb-credit">-₹0.00</span>
+              </div>
+              <hr style="border:none; border-top: var(--border-hairline);">
+              <div class="meta-row">
+                <span class="meta-key" style="font-weight:600; color:var(--color-paper)">Net Balance Payable:</span>
+                <span class="balance-val" id="bill-res-net" style="font-size:18px;">₹0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Invoice No</th>
+                <th>Boarder</th>
+                <th>Period</th>
+                <th>Swipes</th>
+                <th>Gross Charges</th>
+                <th>Rebate Subsidy</th>
+                <th>Net Payable</th>
+                <th>Ledger Status</th>
+              </tr>
+            </thead>
+            <tbody id="billing-history-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 5: AUDIT LEDGER & ACTIVITY STREAM
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-audit" style="display:none;">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Audit Ledger & Activity Stream</h2>
+            <p>Immutable system audit journal logging balance modifications, swipe attempts, and ledger commits</p>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Action Type</th>
+                <th>Entity Target</th>
+                <th>Entity ID</th>
+                <th>Delta Journal (New / Old)</th>
+                <th>Performed By</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------------
+           VIEW 6: STUDENT PORTAL (AUTHENTICATED BOARDER VIEW)
+           --------------------------------------------------------------------- -->
+      <section class="page-container view-section" id="view-student-portal" style="display:none;">
+        <div class="page-title-block">
+          <div class="page-title-left">
+            <h2>Student Mess Portal</h2>
+            <p>Authenticated boarder terminal with live wallet float, meal slot tracker, and leave filing</p>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-bottom: 24px;">
+          <div class="stat-box">
+            <span class="stat-label">Student Boarder</span>
+            <span class="stat-value" id="sp-name" style="font-size:16px;">NISHANK CHHIPA</span>
+            <span class="stat-sub" id="sp-id">25BCE1642</span>
+          </div>
+
+          <div class="stat-box">
+            <span class="stat-label">Hall & Room</span>
+            <span class="stat-value" id="sp-block-room" style="font-size:16px;">BLK-B • Room 412</span>
+            <span class="stat-sub" id="sp-mess-plan">NON_VEG Catering Plan</span>
+          </div>
+
+          <div class="stat-box">
+            <span class="stat-label">Wallet Float Balance</span>
+            <span class="stat-value" id="sp-balance" style="color:var(--color-acid-lime)">₹3,450.00</span>
+            <span class="stat-sub">Valid for Turnstile Gate Access</span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Left: Today's Slot Status -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Today's Meal Slot Status</span>
+              <span class="badge badge-available">LIVE TRACKER</span>
+            </div>
+            <div class="slots-container" id="sp-today-slots" style="margin-top:0;">
+              <!-- Slots dynamically inserted -->
+            </div>
+          </div>
+
+          <!-- Right: File Rebate Form -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">File Mess Rebate Leave</span>
+              <span class="card-subtitle">Self-service Portal</span>
+            </div>
+
+            <form id="sp-rebate-form" onsubmit="handleStudentSelfRebateSubmit(event)">
+              <input type="hidden" id="sp-rebate-student-id">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">From Date</label>
+                  <input type="date" id="sp-rebate-from" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">To Date</label>
+                  <input type="date" id="sp-rebate-to" class="form-control" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Reason for Absence</label>
+                <input type="text" id="sp-rebate-reason" class="form-control" placeholder="Home visit, hackathon, medical leave..." required>
+              </div>
+              <button type="submit" class="btn-primary" style="width:100%;">
+                Submit Leave Application
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Student Self-Recharge Card -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <span class="card-title">Recharge Mess Wallet</span>
+              <div class="card-subtitle">Self-service digital deposit</div>
+            </div>
+            <span class="balance-val" id="sp-recharge-balance-disp">₹3,450.00</span>
+          </div>
+          <form id="sp-recharge-form" onsubmit="handleStudentSelfRecharge(event)">
+            <div class="grid-2" style="align-items: center;">
+              <div>
+                <label class="form-label">Quick Amount</label>
+                <div class="chip-group" style="margin-bottom: 0;">
+                  <button type="button" class="chip-btn" onclick="setStudentRechargeAmount(500)">+₹500</button>
+                  <button type="button" class="chip-btn" onclick="setStudentRechargeAmount(1000)">+₹1,000</button>
+                  <button type="button" class="chip-btn" onclick="setStudentRechargeAmount(2000)">+₹2,000</button>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-end;">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                  <label class="form-label" for="sp-recharge-amount">Deposit Amount (₹)</label>
+                  <input type="number" id="sp-recharge-amount" class="form-control" placeholder="Enter amount..." min="50" step="50" required>
+                </div>
+                <button type="submit" class="btn-primary" style="white-space: nowrap; height: 38px;">
+                  Deposit Funds
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <span class="card-title">Personal Meal Swipe Log</span>
+            <span class="card-subtitle">Latest turnstile swipe transactions</span>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Meal Category</th>
+                  <th>Tariff Deducted</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="sp-history-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: AUTHENTICATION GATEWAY (LINEAR STYLE)
+       ========================================================================= -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-glyph" style="width:34px;height:34px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+            <path d="M3 9h18M9 21V9"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 style="font-size:16px;font-weight:510;color:var(--color-paper);">Hostel Mess Portal</h2>
+          <p style="font-size:12px;color:var(--color-fog);">Oracle 3NF Enterprise Gateway</p>
+        </div>
+      </div>
+
+      <div class="auth-role-tabs">
+        <button class="role-tab-btn active" id="tab-warden" onclick="setLoginRole('admin')">Warden Terminal</button>
+        <button class="role-tab-btn" id="tab-student" onclick="setLoginRole('student')">Student Portal</button>
+      </div>
+
+      <div id="auth-error-msg" class="pos-banner pos-banner-error" style="margin-bottom:14px;padding:10px 12px;font-size:12px;"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="auth-username">Username / Student ID</label>
+        <input type="text" id="auth-username" class="form-control" value="admin" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="auth-password">Password</label>
+        <input type="password" id="auth-password" class="form-control" value="admin123" required>
+      </div>
+
+      <button class="btn-primary" style="width:100%;margin-top:8px;" onclick="performLogin(document.getElementById('auth-username').value, document.getElementById('auth-password').value)">
+        Authenticate & Enter Portal
+      </button>
+
+      <!-- 1-Click Test Demo Logins -->
+      <div class="quick-demo-box">
+        <span class="quick-demo-label">1-Click Test Accounts</span>
+        <div class="quick-btn-row">
+          <button class="btn-secondary" id="quick-login-warden" style="flex:1;font-size:11px;">
+            Warden (admin)
+          </button>
+          <button class="btn-secondary" id="quick-login-student" style="flex:1;font-size:11px;">
+            Student (25BCE1642)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: ENROLL BOARDER MODAL
+       ========================================================================= -->
+  <div class="modal-overlay" id="enroll-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Enroll New Boarder</h3>
+        <button class="modal-close-btn" onclick="closeEnrollModal()">&times;</button>
+      </div>
+      <form onsubmit="handleEnrollSubmit(event)">
+        <div class="modal-body">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Registration ID</label>
+              <input type="text" id="enroll-id" class="form-control" placeholder="e.g. 25BCE1999" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="enroll-name" class="form-control" placeholder="e.g. Siddharth Rao" required>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" id="enroll-email" class="form-control" placeholder="student@vitstudent.ac.in" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input type="text" id="enroll-phone" class="form-control" placeholder="+91 98765 00000" required>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label">Block</label>
+              <select id="enroll-block" class="form-select">
+                <option value="BLK-A">Block A</option>
+                <option value="BLK-B" selected>Block B</option>
+                <option value="BLK-C">Block C</option>
+                <option value="BLK-D">Block D</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Room</label>
+              <input type="text" id="enroll-room" class="form-control" placeholder="e.g. 302" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mess Plan</label>
+              <select id="enroll-mess" class="form-select">
+                <option value="VEG">VEG</option>
+                <option value="NON_VEG" selected>NON_VEG</option>
+                <option value="SPECIAL">SPECIAL</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Initial Wallet Deposit (₹)</label>
+            <input type="number" id="enroll-balance" class="form-control" value="2500" min="0" step="50" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeEnrollModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Enroll in Registry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: WALLET TOP-UP / ADD FUNDS MODAL (ADMIN)
+       ========================================================================= -->
+  <div class="modal-overlay" id="topup-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Wallet Top-Up / Add Funds</h3>
+        <button class="modal-close-btn" onclick="closeTopupModal()">&times;</button>
+      </div>
+      <form onsubmit="handleTopupSubmit(event)">
+        <div class="modal-body">
+          <input type="hidden" id="topup-student-id">
+          
+          <div class="student-meta-panel" style="margin-top: 0; margin-bottom: 16px;">
+            <div class="meta-row">
+              <span class="meta-key">Target Boarder</span>
+              <span class="meta-val" id="topup-student-name">Student Name (ID)</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Current Balance</span>
+              <span class="balance-val" id="topup-current-balance">₹0.00</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quick Select Deposit Amount</label>
+            <div class="chip-group">
+              <button type="button" class="chip-btn" onclick="selectTopupChip(500)">+₹500</button>
+              <button type="button" class="chip-btn" onclick="selectTopupChip(1000)">+₹1,000</button>
+              <button type="button" class="chip-btn" onclick="selectTopupChip(2000)">+₹2,000</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="topup-amount">Deposit Amount (₹)</label>
+            <input type="number" id="topup-amount" class="form-control" placeholder="Enter custom amount..." min="50" step="50" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeTopupModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Add Funds to Wallet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: EDIT STUDENT MODAL (ADMIN)
+       ========================================================================= -->
+  <div class="modal-overlay" id="edit-student-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Boarder Information</h3>
+        <button class="modal-close-btn" onclick="closeEditStudentModal()">&times;</button>
+      </div>
+      <form onsubmit="handleEditStudentSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Registration ID (Primary Key)</label>
+            <input type="text" id="edit-student-id" class="form-control" style="opacity: 0.7; cursor: not-allowed;" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="edit-student-name" class="form-control" required>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Hostel Block</label>
+              <select id="edit-student-block" class="form-select">
+                <option value="BLK-A">Block A</option>
+                <option value="BLK-B">Block B</option>
+                <option value="BLK-C">Block C</option>
+                <option value="BLK-D">Block D</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Room Number</label>
+              <input type="text" id="edit-student-room" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Mess Catering Plan</label>
+              <select id="edit-student-mess" class="form-select">
+                <option value="VEG">VEG</option>
+                <option value="NON_VEG">NON_VEG</option>
+                <option value="SPECIAL">SPECIAL</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Account Status</label>
+              <select id="edit-student-status" class="form-select">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="ON_LEAVE">ON_LEAVE</option>
+                <option value="SUSPENDED">SUSPENDED</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeEditStudentModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: CONFIRM DELETE STUDENT MODAL (ADMIN)
+       ========================================================================= -->
+  <div class="modal-overlay" id="delete-student-modal">
+    <div class="modal-card" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 style="color: var(--color-coral-red);">Confirm Boarder Deregistration</h3>
+        <button class="modal-close-btn" onclick="closeDeleteStudentModal()">&times;</button>
+      </div>
+      <form onsubmit="handleDeleteStudentSubmit(event)">
+        <div class="modal-body">
+          <input type="hidden" id="delete-student-id">
+          <div class="pos-banner pos-banner-error show" style="margin-top: 0; margin-bottom: 16px;">
+            <span class="banner-icon">&#9888;</span>
+            <div>
+              <strong>Permanent Deletion Warning:</strong> You are about to deregister <strong id="delete-student-name">Student</strong>.
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--color-fog); line-height: 1.5;">
+            This will permanently remove the student record and perform a cascading deletion of all associated <strong>meal swipes</strong>, <strong>rebate requests</strong>, <strong>billing ledgers</strong>, and portal login credentials.
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeDeleteStudentModal()">Cancel</button>
+          <button type="submit" class="btn-danger" style="padding: 8px 16px; font-size: 13px;">Permanently Delete Boarder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODALS: ARCHITECTURE & RELATIONAL MODEL INFO
+       ========================================================================= -->
+  <div class="modal-overlay" id="about-modal">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header">
+        <h3>Enterprise System Architecture & DBMS Model</h3>
+        <button class="modal-close-btn" onclick="closeAboutModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size:13px;line-height:1.6;color:var(--color-fog);display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <strong style="color:var(--color-paper)">Project Credits:</strong><br>
+          Developer: <span style="color:var(--color-acid-lime);font-family:var(--font-berkeley-mono)">NISHANK CHHIPA</span> (Reg No: <span style="color:var(--color-acid-lime);font-family:var(--font-berkeley-mono)">25BCE1642</span>)<br>
+          Course: B.Tech CSE • Semester 3 DBMS Full-Stack Portal
+        </div>
+
+        <div>
+          <strong style="color:var(--color-paper)">Relational Architecture (8 Normalized 3NF Tables):</strong><br>
+          <code>hostel_blocks</code>, <code>students</code>, <code>meal_categories</code>, <code>daily_menus</code>, <code>rebate_requests</code>, <code>meal_swipes</code>, <code>monthly_bills</code>, <code>audit_log</code>, <code>users_auth</code>.
+        </div>
+
+        <div>
+          <strong style="color:var(--color-paper)">Date-Aware PL/SQL Triggers:</strong><br>
+          • <code>trg_prevent_duplicate_swipe</code>: Prevents double-swiping for the same category on the same calendar day (Error -20001).<br>
+          • <code>trg_rebate_swipe_guard</code>: Prohibits turnstile access if student is on active approved rebate leave (Error -20002).<br>
+          • <code>trg_audit_wallet_change</code>: Captures all wallet balance modifications in immutable audit trail.
+        </div>
+
+        <div>
+          <strong style="color:var(--color-paper)">PL/SQL Package <code>mess_ops_pkg</code>:</strong><br>
+          • <code>calculate_monthly_billing</code>: Explicit cursors <code>c_swipes</code> & <code>c_rebates</code>, cursor FOR loops, atomic <code>MERGE INTO monthly_bills</code>.<br>
+          • <code>record_turnstile_swipe</code>: Real-time tariff deduction & status reporting.<br>
+          • <code>register_student</code> & <code>apply_rebate</code>: Transactional workflows.
+        </div>
+
+        <div>
+          <strong style="color:var(--color-paper)">Full-Stack Integrations:</strong><br>
+          • Java 25 HTTP Backend with Oracle JDBC (<code>CallableStatement</code> & <code>PreparedStatement</code>).<br>
+          • Standalone Python ODBC Reporting Tool (<code>reports/odbc_audit.py</code>).
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeAboutModal()">Close Overview</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function setLoginRole(role) {
+      document.getElementById('tab-warden').classList.toggle('active', role === 'admin');
+      document.getElementById('tab-student').classList.toggle('active', role === 'student');
+      if (role === 'admin') {
+        document.getElementById('auth-username').value = 'admin';
+        document.getElementById('auth-password').value = 'admin123';
+      } else {
+        document.getElementById('auth-username').value = '25BCE1642';
+        document.getElementById('auth-password').value = 'student123';
+      }
+    }
+  </script>
+</body>
+</html>
